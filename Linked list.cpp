@@ -4,6 +4,7 @@
 #include<stdio.h>
 #include<malloc.h>
 #include<stdlib.h>
+#include<stdbool.h>
 //----------------------------------------------------------------------------------
 typedef struct LNobe
 {
@@ -18,6 +19,10 @@ void CreateList_R(PNobe& pL, int n);//用后插法创建单链表，n表示要�
 void TraverseList(PNobe pL);//遍历函数
 void MergeList(PNobe& pA, PNobe& pB, PNobe& pC);//合并表A，B
 void ReverseList(PNobe& pL);//逆转表
+bool GetElem(PNobe pL, int n, int& e);//取值函数
+PNobe LocateElem(PNobe& pL, int e);//查找函数
+bool InsertList(PNobe& pL, int n, int elem);//插入函数，n为插入位置，elem为插入的数据
+int DeleteElem(PNobe& pL, int n);
 //-----------------------------------------------------------------------------------
 int main()
 {
@@ -35,9 +40,80 @@ int main()
 	TraverseList(pC);
 	ReverseList(pC);
 	TraverseList(pC);
+	InsertList(pC, 6, 6);
+	TraverseList(pC);
+	DeleteElem(pC, 1);
+	TraverseList(pC);
+	/*int e;
+	GetElem(pC, 2, e);
+	printf("%d\n", e);
+	printf("%p\n", LocateElem(pC, 7));*/
 	return 0;
 }
 //--------------------------------------------------------------------------------------
+int DeleteElem(PNobe& pL, int n)
+{
+	PNobe P = pL, R;
+	int i = 0;
+	while (P && i < n - 1)
+	{
+		P = P->pNext;
+		i++;
+	}
+	if (P == NULL || i > n - 1)
+		exit(-1);
+	R = P->pNext;
+	P->pNext = R->pNext;
+	i = R->data;
+	free(R);
+	return i;
+}
+bool InsertList(PNobe& pL, int n, int elem)//插入函数，n为插入位置，elem为插入的数据
+{
+	PNobe P =pL,T=(PNobe)malloc(sizeof(LNobe));
+	if (NULL == T)
+	{
+		return false;
+	}
+	T->data = elem;
+	int i = 0;
+	while (P && i <n-1)//找到插入元素的前一个结点
+	{
+		P = P->pNext;
+		i++;
+	}
+	if (P == NULL || i > n - 1)
+	{
+		printf("InsertList false\n");
+		exit(-1);
+	}
+	T->pNext = P->pNext;
+	P->pNext = T;
+	return true;
+}
+PNobe LocateElem(PNobe& pL, int e)//查找与e值相等的元素
+{
+	PNobe P = pL->pNext;
+	while (P && P->data != e)
+	{
+		P = P->pNext;
+	}
+	return P;//查找失败返回NULL
+}
+bool GetElem(PNobe pL, int n, int& e)//取值函数n为所取元素的序号，e用于接收元素
+{
+	PNobe P = pL->pNext;//让P指向首元结点也就是第一个有效数据
+	int i = 1;//用于计数
+	while (P && i < n)
+	{
+		P = P->pNext;
+		i++;
+	}
+	if (P == NULL || i > n)
+		return false;
+	e = P->data;
+	return true;
+}
 void ReverseList(PNobe& pL)//“原地逆转”，
 {
 	PNobe pa=NULL, pb=pL->pNext, pc=pL->pNext->pNext;//让pa指向空，pb指向当前结点，pc指向下一个结点；
@@ -119,13 +195,13 @@ void CreateList_H(PNobe& pL, int n)
 }
 void CreateList_R(PNobe& pL, int n)//用后插法创建单链表，n表示要创建的有效结点个数
 {
-	pL = (PNobe)malloc(sizeof(LNobe));//
-	if (NULL == pL)
-	{
-		printf("内存分配失败\n");
-		exit(-1);
-	}
-	pL->pNext = NULL;//
+	//pL = (PNobe)malloc(sizeof(LNobe));//
+	//if (NULL == pL)
+	//{
+	//	printf("内存分配失败\n");
+	//	exit(-1);
+	//}
+	//pL->pNext = NULL;//
 	PNobe R = pL;//创建一个尾指针，使它与头指针一同指向头结点
 	PNobe P;//用于生成新的结点
 	int i = 0, temp = 0;//temp用来存放输入数据；
